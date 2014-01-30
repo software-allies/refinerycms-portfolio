@@ -3,80 +3,206 @@
  * @name jquery.skitter.js
  * @description Slideshow
  * @author Thiago Silva Ferreira - http://thiagosf.net
- * @version 3.8
+ * @version 4.2.1
  * @date August 04, 2010
- * @update February 02, 2011
+ * @update April 25, 2013
  * @copyright (c) 2010 Thiago Silva Ferreira - http://thiagosf.net
  * @license Dual licensed under the MIT or GPL Version 2 licenses
  * @example http://thiagosf.net/projects/jquery/skitter/
  */
-
-(function($) {
+;(function($) {
 	
 	var number_skitter = 0,
 		skitters = [];
 	
 	$.fn.skitter = function(options) {
 		return this.each(function() {
-			$(this).data('skitter_number', number_skitter);
-			skitters.push(new $sk(this, options, number_skitter));
-			++number_skitter;
+			if ( $(this).data('skitter_number') == undefined ) {
+				$(this).data('skitter_number', number_skitter);
+				skitters.push(new $sk(this, options, number_skitter));
+				++number_skitter;
+			}
 		});
 	};
 	
 	var defaults = {
+		// Animation velocity
 		velocity: 				1,
+
+		// Interval between transitions
 		interval: 				2500, 
+
+		// Default animation
 		animation: 				'',
+
+		// Numbers display
 		numbers: 				true,
+
+		// Navigation display
 		navigation:			 	true,
+
+		// Label display
 		label:					true,
+
+		// Easing default
 		easing_default: 		'',
+
+		// The skitters box (internal)
 		box_skitter: 			null,
+
+		// @deprecated
 		time_interval: 			null,
+
+		// Image link (internal)
 		images_links: 			null,
+
+		// Actual image (internal)
 		image_atual: 			null,
+
+		// Actual link (internal)
 		link_atual: 			null,
+
+		// Actual label (internal)
 		label_atual: 			null,
+
+		// Actual target (internal)
 		target_atual: 			'_self',
+
+		// Skitter width (internal)
 		width_skitter: 			null,
+
+		// Skitter height (internal)
 		height_skitter: 		null,
+
+		// Image number loop (internal)
 		image_i: 				1,
+
+		// Is animating (internal)
 		is_animating:  			false,
+
+		// Is hover box_skitter (internal)
 		is_hover_box_skitter: 	false,
+
+		// Smart randomly (internal)
 		random_ia: 				null,
+
+		// Randomly sliders
 		show_randomly: 			false,
+
+		// Navigation with thumbs
 		thumbs: 				false,
-		animateNumberOut: 		{backgroundColor:'#333', color:'#fff'},
-		animateNumberOver: 		{backgroundColor:'#fff', color:'#000'},
-		animateNumberActive: 	{backgroundColor:'#cc3333', color:'#fff'},
+
+		// Animation/style number/dot
+		animateNumberOut: 		false,
+
+		// Animation/style hover number/dot
+		animateNumberOver: 		false,
+
+		// Animation/style active number/dot
+		animateNumberActive: 	false,
+
+		// Hide numbers and navigation
 		hideTools: 				false,
+
+		// Fullscreen mode
 		fullscreen: 			false,
+
+		// Loading data from XML file
 		xml: 					false,
+
+		// Navigation with dots
 		dots: 					false,
+
+		// Width label
 		width_label: 			null,
-		opacity_elements:		0.75, // Final opacity of elements in hideTools
-		interval_in_elements:	300, // Interval animation hover elements hideTools
-		interval_out_elements:	500, // Interval animation out elements hideTools
+
+		// Final opacity of elements in hideTools
+		opacity_elements:		0.75,
+
+		// Interval animation hover elements hideTools 
+		interval_in_elements:	200, 
+
+		// Interval animation out elements hideTools
+		interval_out_elements:	300, 
+
+		// Onload Callback
 		onLoad:					null,
+
+		// Function call to change image
 		imageSwitched:			null,
+
+		// @deprecated
 		max_number_height: 		20,
+
+		// Alignment of numbers/dots/thumbs
 		numbers_align:			'left',
+
+		// Preview with dots
 		preview:				false,
+
+		// Focus slideshow
 		focus:					false,
+
+		// Focus active (internal)
 		foucs_active:			false,
+
+		// Position of button focus slideshow
 		focus_position:			'center',
+
+		// Option play/pause manually
 		controls:				false,
+
+		// Position of button controls
 		controls_position:		'center',
+
+		// Displays progress bar
 		progressbar:			false,
+
+		// CSS progress bar
 		progressbar_css:		{},
+
+		// Is paused (internal)
 		is_paused:				false,
+
+		// Is blur (internal)
 		is_blur:				false,
+
+		// Is paused time (internal)
 		is_paused_time:			false,
+
+		// Time start (internal)
 		timeStart:				0,
+
+		// Elapsed time (internal)
 		elapsedTime:			0,
+
+		// Stop animation to move mouse over it.
 		stop_over:				true,
+
+		// Enable navigation keys
 		enable_navigation_keys:	false,
+
+		// Specific animations
+		with_animations:		[],
+
+		// Function call to go over the navigation buttons
+		// mouseOverButton: 		function() { $(this).stop().animate({opacity:0.5}, 200); }, 
+		mouseOverButton: 		null, 
+
+		// Function call to go out the navigation buttons
+		// mouseOutButton: 		function() { $(this).stop().animate({opacity:1}, 200); }, 
+		mouseOutButton: 		null, 
+
+		// Sets whether the slideshow will start automatically
+		auto_play: 				true, 
+
+		// Label animation type
+		labelAnimation: 		'slideUp', 
+
+		// Theme
+		theme: null, 
+
+		// Structure (internal)
 		structure: 	 			  '<a href="#" class="prev_button">prev</a>'
 								+ '<a href="#" class="next_button">next</a>'
 								+ '<span class="info_slide"></span>'
@@ -130,6 +256,11 @@
 				console.warn('Width or height size is null! - Skitter Slideshow');
 				return false;
 			}
+
+			// Theme
+			if ( this.settings.theme ) {
+				this.box_skitter.addClass('skitter-' + this.settings.theme);
+			}
 			
 			// Structure html
 			this.box_skitter.append(this.settings.structure);
@@ -140,13 +271,11 @@
 			if (this.settings.velocity >= 2) this.settings.velocity = 1.3;
 			if (this.settings.velocity <= 0) this.settings.velocity = 1;
 			
-			if (!this.settings.numbers && !this.settings.thumbs && !this.settings.dots) this.box_skitter.find('.info_slide').hide();
-			if (!this.settings.label) this.box_skitter.find('.label_skitter').hide();
-			if (!this.settings.navigation) {
-				this.box_skitter.find('.prev_button').hide();
-				this.box_skitter.find('.next_button').hide();
-			}
-			
+			this.box_skitter.find('.info_slide').hide();
+			this.box_skitter.find('.label_skitter').hide();
+			this.box_skitter.find('.prev_button').hide();
+			this.box_skitter.find('.next_button').hide();
+						
 			this.box_skitter.find('.container_skitter').width(this.settings.width_skitter);
 			this.box_skitter.find('.container_skitter').height(this.settings.height_skitter);
 			
@@ -223,22 +352,20 @@
 			if (self.settings.thumbs && !self.settings.fullscreen) 
 			{
 				// New animation
-				self.settings.animateNumberOut = {opacity:0.2, width:'70px'};
-				self.settings.animateNumberOver = {opacity:0.5, width:'70px'};
-				self.settings.animateNumberActive = {opacity:1.0, width:'70px'};
+				self.settings.animateNumberOut = {opacity:0.3};
+				self.settings.animateNumberOver = {opacity:0.5};
+				self.settings.animateNumberActive = {opacity:1};
 				
 				self.box_skitter.find('.info_slide').addClass('info_slide_thumb');
-				var width_info_slide = u * 55 + 75;
+				var width_info_slide = (u + 1) * self.box_skitter.find('.info_slide_thumb .image_number').width();
 				self.box_skitter.find('.info_slide_thumb').width(width_info_slide);
-				self.box_skitter.css({height:self.box_skitter.height() + self.box_skitter.find('.info_slide').height() + 5});
-				self.settings.label = false;
+				self.box_skitter.css({height:self.box_skitter.height() + self.box_skitter.find('.info_slide').height()});
 				
 				self.box_skitter.append('<div class="container_thumbs"></div>');
 				var copy_info_slide = self.box_skitter.find('.info_slide').clone();
 				self.box_skitter.find('.info_slide').remove();
 				self.box_skitter.find('.container_thumbs')
 					.width(self.settings.width_skitter)
-					.height(50)
 					.append(copy_info_slide);
 				
 				// Scrolling with mouse movement
@@ -251,18 +378,14 @@
 					y_value = self.box_skitter.offset().top;
 					
 				info_slide_thumb.find('.image_number').each(function(){
-					width_image += $(this).width() 
-								+ parseInt($(this).css('marginLeft')) 
-								+ parseInt($(this).css('marginRight')) 
-								+ parseInt($(this).css('paddingLeft')) 
-								+ parseInt($(this).css('paddingRight'));
+					width_image += $(this).outerWidth();
 				});
 				
 				info_slide_thumb.width(width_image+'px');
 				w_info_slide_thumb = info_slide_thumb.width();
-				width_valor = this.settings.width_skitter;
+				width_value = this.settings.width_skitter;
 				
-				width_valor = width_skitter - 100;
+				width_value = width_skitter - 100;
 				
 				if (width_info_slide > self.settings.width_skitter) {
 					self.box_skitter.mousemove(function(e){
@@ -272,11 +395,11 @@
 						
 						x = x - x_value;
 						y = y - y_value;
-						novo_width = w_info_slide_thumb - width_valor;
-						new_x = -((novo_width * x) / width_valor);
+						novo_width = w_info_slide_thumb - width_value;
+						new_x = -((novo_width * x) / width_value);
 						
 						if (new_x > 0) new_x = 0;
-						if (new_x < -(w_info_slide_thumb - width_skitter - 5)) new_x = -(w_info_slide_thumb - width_skitter - 5);
+						if (new_x < -(w_info_slide_thumb - width_skitter)) new_x = -(w_info_slide_thumb - width_skitter);
 						
 						if (y > height_skitter) {
 							info_slide_thumb.css({left: new_x});
@@ -373,34 +496,48 @@
 					return false;
 				});
 				
-				self.box_skitter.find('.next_button, .prev_button').bind('mouseover', self.mouseOverButton);
-				self.box_skitter.find('.next_button, .prev_button').bind('mouseleave', self.mouseOutButton);
+				self.box_skitter.find('.next_button, .prev_button').bind('mouseover', self.settings.mouseOverButton);
+				self.box_skitter.find('.next_button, .prev_button').bind('mouseleave', self.settings.mouseOutButton);
 				
 				this.box_skitter.find('.image_number').hover(function() {
 					if ($(this).attr('class') != 'image_number image_number_select') {
-						$(this).stop().animate(self.settings.animateNumberOver, 300);
+						if ( self.settings.animateNumberOver ) {
+							$(this).stop().animate(self.settings.animateNumberOver, 300);
+						}
+						// $(this).stop().animate(self.settings.animateNumberOver, 300);
 					}
 				}, function(){
 					if ($(this).attr('class') != 'image_number image_number_select') {
-						$(this).stop().animate(self.settings.animateNumberOut, 500);
+						if ( self.settings.animateNumberOut ) {
+							$(this).stop().animate(self.settings.animateNumberOut, 500);
+						}
+						// $(this).stop().animate(self.settings.animateNumberOut, 500);
 					}
 				});
 				
 				this.box_skitter.find('.image_number').click(function(){
 					if ($(this).attr('class') != 'image_number image_number_select') {
-					    var imageNumber = parseInt($(this).attr('rel'));
+						var imageNumber = parseInt($(this).attr('rel'));
 						self.jumpToImage(imageNumber);
 					}
 					return false;
 				});
 				
-				this.box_skitter.find('.image_number').css(self.settings.animateNumberOut);
-				this.box_skitter.find('.image_number:eq(0)').css(self.settings.animateNumberActive);
+				if ( self.settings.animateNumberOut ) {
+					this.box_skitter.find('.image_number').css(self.settings.animateNumberOut);
+				}
+
+				if ( self.settings.animateNumberActive ) {
+					this.box_skitter.find('.image_number:eq(0)').css(self.settings.animateNumberActive);
+				}
+
+				// this.box_skitter.find('.image_number').css(self.settings.animateNumberOut);
+				// this.box_skitter.find('.image_number:eq(0)').css(self.settings.animateNumberActive);
 				
-				// Preview
+				// Preview with dots
 				if (self.settings.preview && self.settings.dots) 
 				{
-					var preview = $('<div id="preview_slide"><ul></ul></div>');
+					var preview = $('<div class="preview_slide"><ul></ul></div>');
 					
 					for (var i = 0; i < this.settings.images_links.length; i++) {
 						var li = $('<li></li>');
@@ -420,15 +557,15 @@
 						var _left_preview = (_left_image - _left_info) - 43;
 						
 						var rel = parseInt($(this).attr('rel'));
-						var image_current_preview = self.box_skitter.find('#preview_slide_current img').attr('src');
+						var image_current_preview = self.box_skitter.find('.preview_slide_current img').attr('src');
 						var _left_ul = -(rel * 100);
 						
-						self.box_skitter.find('#preview_slide').find('ul').animate({left: _left_ul}, {duration:200, queue: false, easing: 'easeOutSine'});
-						self.box_skitter.find('#preview_slide').fadeTo(1,1).animate({left: _left_preview}, {duration:200, queue: false});
+						self.box_skitter.find('.preview_slide').find('ul').animate({left: _left_ul}, {duration:200, queue: false, easing: 'easeOutSine'});
+						self.box_skitter.find('.preview_slide').fadeTo(1,1).animate({left: _left_preview}, {duration:200, queue: false});
 					});
 					
 					self.box_skitter.find(class_info).mouseleave(function() {
-						$('#preview_slide').animate({opacity: 'hide'}, {duration: 200, queue: false});
+						$('.preview_slide').animate({opacity: 'hide'}, {duration: 200, queue: false});
 					});
 				}
 			}
@@ -444,7 +581,7 @@
 			}
 			
 			// Progressbar
-			if (self.settings.progressbar) {
+			if (self.settings.progressbar && self.settings.auto_play) {
 				self.addProgressBar();
 			}
 
@@ -502,8 +639,19 @@
 		{
 			var self = this;
 			var init_pause = false;
+
+			if (this.settings.numbers || this.settings.thumbs) this.box_skitter.find('.info_slide').fadeIn(500);
+			if (this.settings.dots) this.box_skitter.find('.info_slide_dots').fadeIn(500);
+			if (this.settings.label) this.box_skitter.find('.label_skitter').show();
+			if (this.settings.navigation) {
+				this.box_skitter.find('.prev_button').fadeIn(500);
+				this.box_skitter.find('.next_button').fadeIn(500);
+			}
 			
-			self.startTime();
+			if (self.settings.auto_play) {
+				self.startTime();
+			}
+
 			self.windowFocusOut();
 			self.setLinkAtual();
 			
@@ -515,7 +663,9 @@
 			self.setValueBoxText();
 			self.showBoxText();
 			
-			self.stopOnMouseOver();
+			if (self.settings.auto_play) {
+				self.stopOnMouseOver();
+			}
 
 			var mouseOverInit = function() {
 				if (self.settings.stop_over) {
@@ -530,13 +680,15 @@
 			self.box_skitter.find('.next_button').mouseover(mouseOverInit);
 			
 			if (self.settings.images_links.length > 1 && !init_pause) {
-				self.timer = setTimeout(function() { self.nextImage(); }, self.settings.interval);
+				if (self.settings.auto_play) {
+					self.timer = setTimeout(function() { self.nextImage(); }, self.settings.interval);
+				}
 			} 
 			else {
 				self.box_skitter.find('.loading, .image_loading, .image_number, .next_button, .prev_button').remove();
 			}
 			
-			if ($.isFunction(self.settings.onLoad)) self.settings.onLoad();
+			if ($.isFunction(self.settings.onLoad)) self.settings.onLoad(self);
 		},
 		
 		/**
@@ -553,7 +705,7 @@
 				this.box_skitter.find('.image a').attr({'href': this.settings.link_atual});
 				this.box_skitter.find('.image_main').attr({'src': this.settings.image_atual});
 				this.box_skitter.find('.box_clone').remove();
-				
+
 				this.nextImage();
 			}
 		},
@@ -598,9 +750,11 @@
 				'downBars', 
 				'hideBars', 
 				'swapBars', 
-				'swapBarsBack'
+				'swapBarsBack', 
+				'swapBlocks',
+				'cut'
 			];
-			
+						
 			if (self.settings.progressbar) self.hideProgressBar();
 			
 			animation_type = (this.settings.animation == '' && this.settings.images_links[this.settings.image_i][2]) ? 
@@ -622,6 +776,17 @@
 			{
 				var random_id = parseInt(Math.random() * animations_functions.length);
 				animation_type = animations_functions[random_id];
+			}
+			// Specific animations
+			else if (self.settings.with_animations.length > 0)
+			{
+				var total_with_animations = self.settings.with_animations.length;
+				if (this.settings._i_animation == undefined) {
+					this.settings._i_animation = 0;
+				}
+				animation_type = self.settings.with_animations[this.settings._i_animation];
+				++this.settings._i_animation;
+				if (this.settings._i_animation >= total_with_animations) this.settings._i_animation = 0;
 			}
 			
 			switch (animation_type) 
@@ -727,6 +892,12 @@
 					break;
 				case 'swapBarsBack' : 
 					this.animationSwapBars({easing: 'easeOutBack'});
+					break;
+				case 'swapBlocks' : 
+					this.animationSwapBlocks();
+					break;
+				case 'cut' : 
+					this.animationCut();
 					break;
 				default : 
 					this.animationTube();
@@ -902,10 +1073,15 @@
 				var delay_time = 50 * i;
 
 				if (options.random) {
-					time_animate = 1000 / this.settings.velocity;
+					time_animate = (400 * (self.getRandom(2) + 1)) / this.settings.velocity;
 					_btop = _vtop;
 					_bleft = _vleft;
-					delay_time = 30 * (Math.random() * 30);
+					delay_time = Math.ceil( 30 * self.getRandom(30) );
+				}
+				
+				if (options.random && i == (total - 1)) {
+					time_animate = 400 * 3;
+					delay_time = 30 * 30;
 				}
 
 				var callback = (i == (total - 1)) ? function() { self.finishAnimation(); } : '';
@@ -2043,7 +2219,7 @@
 				var _vleft 			= (width_box * i);
 				var _vtop_image 	= 0;
 				var _vleft_image 	= -(width_box * i);
-				
+
 				var box_clone = this.getBoxCloneImgOld(image_old);
 				box_clone.css({left:_vleft+'px', top:_vtop+'px', width:width_box, height:height_box});
 				box_clone.find('img').css({left:_vleft_image, top:_vtop_image});
@@ -2186,6 +2362,138 @@
 				box_clone_next.delay(delay_time).animate({ left:0 }, time_animate, easing, callback);
 			}
 		},
+
+		animationSwapBlocks: function(options)
+		{
+			var self = this;
+			
+			var options = $.extend({}, {easing_old: 'easeInOutQuad', easing_new: 'easeOutQuad'}, options || {});
+			
+			this.settings.is_animating = true;
+			var easing_old = (this.settings.easing_default == '') ? options.easing_old : this.settings.easing_default;
+			var easing_new = (this.settings.easing_default == '') ? options.easing_new : this.settings.easing_default;
+			var time_animate = 800 / this.settings.velocity;
+			
+			var image_old = this.box_skitter.find('.image_main').attr('src');
+			
+			this.setActualLevel();
+			
+			this.setLinkAtual();
+			this.box_skitter.find('.image_main').attr({'src':this.settings.image_atual});
+			this.box_skitter.find('.image_main').hide();
+			
+			var total 			= 2;
+			var width_box 		= this.settings.width_skitter;
+			var height_box 		= Math.ceil(this.settings.height_skitter / total);
+
+			// Old image
+			var box_clone1 = this.getBoxCloneImgOld(image_old), box_clone2 = this.getBoxCloneImgOld(image_old);
+			box_clone1.find('img').css({left:0, top:0});
+			box_clone1.css({top:0, left:0, width:width_box, height:height_box});
+
+			box_clone2.find('img').css({left:0, top:-height_box});
+			box_clone2.css({top:height_box, left:0, width:width_box, height:height_box});
+
+			// Next image
+			var box_clone_next1 = this.getBoxClone(), box_clone_next2 = this.getBoxClone();
+			box_clone_next1.find('img').css({left:0, top:height_box});
+			box_clone_next1.css({top:0, left:0, width:width_box, height:height_box});
+
+			box_clone_next2.find('img').css({left:0, top: -(height_box * total) });
+			box_clone_next2.css({top:height_box, left:0, width:width_box, height:height_box});
+
+			// Add boxes
+			this.addBoxClone(box_clone_next1);
+			this.addBoxClone(box_clone_next2);
+			this.addBoxClone(box_clone1);
+			this.addBoxClone(box_clone2);
+
+			// Show boxes
+			box_clone1.show();
+			box_clone2.show();
+			box_clone_next1.show();
+			box_clone_next2.show();
+
+			// Callback
+			var callback = function() { self.finishAnimation(); };
+
+			// Animations
+			box_clone1.find('img').animate({ top: height_box }, time_animate, easing_old, function() {
+				box_clone1.remove();
+			});
+			box_clone2.find('img').animate({ top: -(height_box * total) }, time_animate, easing_old, function() {
+				box_clone2.remove();
+			});
+			box_clone_next1.find('img').animate({ top: 0 }, time_animate, easing_new);
+			box_clone_next2.find('img').animate({ top: -height_box }, time_animate, easing_new, callback);
+		},
+
+		animationCut: function(options)
+		{
+			var self = this;
+			
+			var options = $.extend({}, {easing_old: 'easeInOutExpo', easing_new: 'easeInOutExpo'}, options || {});
+			
+			this.settings.is_animating = true;
+			var easing_old = (this.settings.easing_default == '') ? options.easing_old : this.settings.easing_default;
+			var easing_new = (this.settings.easing_default == '') ? options.easing_new : this.settings.easing_default;
+			var time_animate = 900 / this.settings.velocity;
+			
+			var image_old = this.box_skitter.find('.image_main').attr('src');
+			
+			this.setActualLevel();
+			
+			this.setLinkAtual();
+			this.box_skitter.find('.image_main').attr({'src':this.settings.image_atual});
+			this.box_skitter.find('.image_main').hide();
+			
+			var total 			= 2;
+			var width_box 		= this.settings.width_skitter;
+			var height_box 		= Math.ceil(this.settings.height_skitter / total);
+
+			// Old image
+			var box_clone1 = this.getBoxCloneImgOld(image_old), box_clone2 = this.getBoxCloneImgOld(image_old);
+			box_clone1.find('img').css({left:0, top:0});
+			box_clone1.css({top:0, left:0, width:width_box, height:height_box});
+
+			box_clone2.find('img').css({left:0, top:-height_box});
+			box_clone2.css({top:height_box, left:0, width:width_box, height:height_box});
+
+			// Next image
+			var box_clone_next1 = this.getBoxClone(), box_clone_next2 = this.getBoxClone();
+			//box_clone_next1.find('img').css({left:0, top:height_box});
+			box_clone_next1.find('img').css({left:0, top:0});
+			box_clone_next1.css({top:0, left:width_box, width:width_box, height:height_box});
+
+			//box_clone_next2.find('img').css({left:0, top: -(height_box * total) });
+			box_clone_next2.find('img').css({left:0, top: -height_box });
+			box_clone_next2.css({top:height_box, left:-width_box, width:width_box, height:height_box});
+
+			// Add boxes
+			this.addBoxClone(box_clone_next1);
+			this.addBoxClone(box_clone_next2);
+			this.addBoxClone(box_clone1);
+			this.addBoxClone(box_clone2);
+
+			// Show boxes
+			box_clone1.show();
+			box_clone2.show();
+			box_clone_next1.show();
+			box_clone_next2.show();
+
+			// Callback
+			var callback = function() { self.finishAnimation(); };
+
+			// Animations
+			box_clone1.animate({ left: -width_box }, time_animate, easing_old, function() {
+				box_clone1.remove();
+			});
+			box_clone2.animate({ left: width_box }, time_animate, easing_old, function() {
+				box_clone2.remove();
+			});
+			box_clone_next1.animate({ left: 0 }, time_animate, easing_new);
+			box_clone_next2.animate({ left: 0 }, time_animate, easing_new, callback);
+		},
 		
 		// End animations ----------------------
 		
@@ -2241,8 +2549,10 @@
 		addClassNumber: function () 
 		{
 			var self = this;
-			this.box_skitter.find('.image_number_select').animate(self.settings.animateNumberOut, 500).removeClass('image_number_select');
-			$('#image_n_'+(this.settings.image_i+1)+'_'+self.number_skitter).animate(self.settings.animateNumberActive, 700).addClass('image_number_select');
+			// this.box_skitter.find('.image_number_select').animate(self.settings.animateNumberOut, 500).removeClass('image_number_select');
+			// $('#image_n_'+(this.settings.image_i+1)+'_'+self.number_skitter).animate(self.settings.animateNumberActive, 700).addClass('image_number_select');
+			this.box_skitter.find('.image_number_select').removeClass('image_number_select');
+			$('#image_n_'+(this.settings.image_i+1)+'_'+self.number_skitter).addClass('image_number_select');
 		},
 
 		// Increment image_i
@@ -2259,6 +2569,7 @@
 		{
 			if (this.settings.link_atual != '#') {
 				var img_clone = $('<a href="'+this.settings.link_atual+'"><img src="'+this.settings.image_atual+'" /></a>');
+				img_clone.attr({ 'target': this.settings.target_atual });
 			} 
 			else {
 				var img_clone = $('<img src="'+this.settings.image_atual+'" />');
@@ -2275,6 +2586,7 @@
 		{
 			if (this.settings.link_atual != '#') {
 				var img_clone = $('<a href="'+this.settings.link_atual+'"><img src="'+image_old+'" /></a>');
+				img_clone.attr({ 'target': this.settings.target_atual });
 			} 
 			else {
 				var img_clone = $('<img src="'+image_old+'" />');
@@ -2341,8 +2653,23 @@
 		showBoxText: function () 
 		{
 			var self = this;
-			if (this.settings.label_atual != undefined && this.settings.label_atual != '' && self.settings.label) {
-				self.box_skitter.find('.label_skitter').slideDown(400);
+
+			if ( this.settings.label_atual != undefined && this.settings.label_atual != '' && self.settings.label ) {
+
+				switch ( self.settings.labelAnimation ) {
+
+					case 'slideUp' : default : 
+						self.box_skitter.find('.label_skitter').slideDown(400);
+						break;
+
+					case 'left' : case 'right' : 
+						self.box_skitter.find('.label_skitter').animate({ left: 0 }, 400, 'easeInOutQuad');
+						break;
+
+					case 'fixed' : 
+						// null
+						break;
+				}
 			}
 		},
 		
@@ -2350,28 +2677,84 @@
 		hideBoxText: function () 
 		{
 			var self = this;
-			this.box_skitter.find('.label_skitter').slideUp(200, function() {
-				self.setValueBoxText();
-			});
+
+			switch ( self.settings.labelAnimation ) {
+
+				case 'slideUp' : default : 
+					this.box_skitter.find('.label_skitter').slideUp(200, function() {
+						self.setValueBoxText();
+					});
+					break;
+
+				case 'left' : case 'right' : 
+					var _left = ( self.settings.labelAnimation == 'left' ) ? -(self.box_skitter.find('.label_skitter').width()) : (self.box_skitter.find('.label_skitter').width());
+					self.box_skitter.find('.label_skitter').animate({ left: _left }, 400, 'easeInOutQuad', function() {
+						self.setValueBoxText();
+					});
+					break;
+
+				case 'fixed' : 
+					self.setValueBoxText();
+					break;
+			}
 		},
 		
 		// Stop time to get over box_skitter
 		stopOnMouseOver: function () 
 		{
 			var self = this;
+
+			if ( self.settings.stop_over ) 
+			{
+				self.box_skitter.hover(function() {
+					
+					if (self.settings.stop_over) self.settings.is_hover_box_skitter = true;
+					
+					if (!self.settings.is_paused_time) {
+						self.pauseTime();
+					}
+					
+					self.setHideTools('hover');
+					self.clearTimer(true);
+					
+				}, function() {
+					if (self.settings.stop_over) self.settings.is_hover_box_skitter = false;
+					
+					if (self.settings.elapsedTime == 0 && !self.settings.is_animating && !self.settings.is_paused) {
+						self.startTime();
+					}
+					else if (!self.settings.is_paused) {
+						self.resumeTime();
+					}
+					
+					self.setHideTools('out');
+					self.clearTimer(true);
+					
+					if (!self.settings.is_animating && self.settings.images_links.length > 1) {
+						self.timer = setTimeout(function() { self.completeMove(); }, self.settings.interval - self.settings.elapsedTime);
+						self.box_skitter.find('.image_main').attr({'src': self.settings.image_atual});
+						self.box_skitter.find('.image a').attr({'href': self.settings.link_atual});
+					}
+				});
+			}
+			else
+			{
+				self.box_skitter.hover(function() {
+					self.setHideTools('hover');
+				}, function() {
+					self.setHideTools('out');
+				});
+			}
+		}, 
+
+		// Hover/out hideTools
+		setHideTools: function( type ) {
+			var self = this;
 			var opacity_elements = self.settings.opacity_elements;
 			var interval_in_elements = self.settings.interval_in_elements;
 			var interval_out_elements = self.settings.interval_out_elements;
 
-			
-			self.box_skitter.hover(function() {
-				
-				if (self.settings.stop_over) self.settings.is_hover_box_skitter = true;
-				
-				if (!self.settings.is_paused_time) {
-					self.pauseTime();
-				}
-				
+			if ( type == 'hover' ) {
 				if (self.settings.hideTools) {
 					if (self.settings.numbers) {
 						self.box_skitter
@@ -2383,14 +2766,9 @@
 					
 					if (self.settings.navigation) {
 						self.box_skitter
-							.find('.prev_button')
+							.find('.prev_button, .next_button')
 							.show()
 							.css({opacity:0})
-							.animate({opacity: opacity_elements}, interval_in_elements);
-							
-						self.box_skitter
-							.find('.next_button')
-							.show().css({opacity:0})
 							.animate({opacity: opacity_elements}, interval_in_elements);
 					}
 
@@ -2399,7 +2777,7 @@
 							.find('.focus_button')
 							.stop()
 							.show().css({opacity:0})
-							.animate({opacity:opacity_elements}, 200);
+							.animate({opacity:opacity_elements}, interval_in_elements);
 					}
 					
 					if (self.settings.controls) {
@@ -2407,36 +2785,25 @@
 						.find('.play_pause_button')
 						.stop()
 						.show().css({opacity:0})
-						.animate({opacity:opacity_elements}, 200);
+						.animate({opacity:opacity_elements}, interval_in_elements);
 					}
 				}
-				
-				self.clearTimer(true);
-				
+
 				if (self.settings.focus && !self.settings.foucs_active && !self.settings.hideTools) {
 					self.box_skitter
 						.find('.focus_button')
 						.stop()
-						.animate({opacity:1}, 200);
+						.animate({opacity:1}, interval_in_elements);
 				}
 				
 				if (self.settings.controls && !self.settings.hideTools) {
 					self.box_skitter
 						.find('.play_pause_button')
 						.stop()
-						.animate({opacity:1}, 200);
+						.animate({opacity:1}, interval_in_elements);
 				}
-				
-			}, function() {
-				if (self.settings.stop_over) self.settings.is_hover_box_skitter = false;
-				
-				if (self.settings.elapsedTime == 0 && !self.settings.is_animating && !self.settings.is_paused) {
-					self.startTime();
-				}
-				else if (!self.settings.is_paused) {
-					self.resumeTime();
-				}
-				
+			}
+			else {
 				if (self.settings.hideTools) {
 					if (self.settings.numbers) {
 						self.box_skitter
@@ -2449,27 +2816,19 @@
 					
 					if (self.settings.navigation) {
 						self.box_skitter
-							.find('.prev_button')
-							.queue("fx", [])
-							.show()
-							.css({opacity: opacity_elements})
-							.animate({opacity:0}, interval_out_elements);
-							
-						self.box_skitter
-							.find('.next_button')
+							.find('.prev_button, .next_button')
 							.queue("fx", [])
 							.show()
 							.css({opacity: opacity_elements})
 							.animate({opacity:0}, interval_out_elements);
 					}
 
-
 					if (self.settings.focus && !self.settings.foucs_active) {
 						self.box_skitter
 							.find('.focus_button')
 							.stop()
 							.css({opacity: opacity_elements})
-							.animate({opacity:0}, 200);
+							.animate({opacity:0}, interval_out_elements);
 					}
 
 					if (self.settings.controls) {
@@ -2477,34 +2836,25 @@
 							.find('.play_pause_button')
 							.stop()
 							.css({opacity: opacity_elements})
-							.animate({opacity:0}, 200);
+							.animate({opacity:0}, interval_out_elements);
 					}
-				}
-				
-				self.clearTimer(true);
-				
-				if (!self.settings.is_animating && self.settings.images_links.length > 1) {
-					self.timer = setTimeout(function() { self.completeMove(); }, self.settings.interval - self.settings.elapsedTime);
-					self.box_skitter.find('.image_main').attr({'src': self.settings.image_atual});
-					self.box_skitter.find('.image a').attr({'href': self.settings.link_atual});
 				}
 				
 				if (self.settings.focus && !self.settings.foucs_active && !self.settings.hideTools) {
 					self.box_skitter
 						.find('.focus_button')
 						.stop()
-						.animate({opacity:0.3}, 200);
+						.animate({opacity:0.3}, interval_out_elements);
 				}
 				
 				if (self.settings.controls && !self.settings.hideTools) {
 					self.box_skitter
 						.find('.play_pause_button')
 						.stop()
-						.animate({opacity:0.3}, 200);
+						.animate({opacity:0.3}, interval_out_elements);
 				}
-				
-			});
-		}, 
+			}
+		},
 		
 		// Stop timer
 		clearTimer: function (force) {
@@ -2514,7 +2864,7 @@
 		
 		// Set link atual
 		setLinkAtual: function() {
-			if (this.settings.link_atual != '#') {
+			if (this.settings.link_atual != '#' && this.settings.link_atual != '') {
 				this.box_skitter.find('.image a').attr({'href': this.settings.link_atual, 'target': this.settings.target_atual});
 			}
 			else {
@@ -2524,22 +2874,11 @@
 		
 		// Hide tools
 		hideTools: function() {
-			this.box_skitter.find('.info_slide').hide();
-			this.box_skitter.find('.prev_button').hide();
-			this.box_skitter.find('.next_button').hide();
-			this.box_skitter.find('.label_skitter').hide();
-			this.box_skitter.find('.focus_button').hide();
-			this.box_skitter.find('.play_pause_button').hide();
-		}, 
-		
-		// Animation mouse over
-		mouseOverButton: function() {
-			$(this).stop().animate({opacity:0.5}, 200);
-		}, 
-		
-		// Animation mouse out
-		mouseOutButton: function() {
-			$(this).stop().animate({opacity:1}, 200);
+			this.box_skitter.find('.info_slide').fadeTo(0, 0);
+			this.box_skitter.find('.prev_button').fadeTo(0, 0);
+			this.box_skitter.find('.next_button').fadeTo(0, 0);
+			this.box_skitter.find('.focus_button').fadeTo(0, 0);
+			this.box_skitter.find('.play_pause_button').fadeTo(0, 0);
 		}, 
 		
 		// Focus Skitter
@@ -2573,8 +2912,12 @@
 				var code = (e.keyCode ? e.keyCode : e.which);
 				if (code == 27) $('#overlay_skitter').trigger('click');
 			});
+
+			var _top = $('.box_skitter').offset().top;
+			var _left = $('.box_skitter').offset().left;
 			
 			self.box_skitter.find('.focus_button').click(function() {
+				if ( self.settings.foucs_active ) return false;
 				self.settings.foucs_active = true;
 				
 				$(this).stop().animate({opacity:0}, self.settings.interval_out_elements);
@@ -2584,8 +2927,6 @@
 					.hide()
 					.fadeTo(self.settings.interval_in_elements, 0.98);
 					
-				var _top = $('.box_skitter').offset().top;
-				var _left = $('.box_skitter').offset().left;
 				var _topFinal = (($(window).height() - $('.box_skitter').height()) / 2) + $(document).scrollTop();
 				var _leftFinal = ($(window).width() - $('.box_skitter').width()) / 2;
 				
@@ -2602,35 +2943,33 @@
 					.css({'background':'none'})
 					.fadeTo(300,0.3);
 				
-				$('#overlay_skitter').click(function() {
-					if ($(this).hasClass('finish_overlay_skitter')) return false;
-					
-					self.settings.foucs_active = false;
-					$(this).addClass('finish_overlay_skitter');
-					
-					$('#mark_position').before($('.box_skitter'));
-					
-					if (!self.settings.hideTools) self.box_skitter.find('.focus_button').animate({opacity:0.3}, 200);
-					
-					self.box_skitter
-						.stop()
-						.animate({'top':_top, 'left':_left}, 300, 'easeOutExpo', function() {
-							$(this).css({'position':'relative', 'top':0, 'left': 0});
-							$('#mark_position').remove();
-						});
-					
-					$('#overlay_skitter').fadeTo(self.settings.interval_out_elements, 0, function() {
-						$(this).remove();
+				return false;
+			});
+
+			$('#overlay_skitter').live('click', function() {
+				if ( $(this).hasClass('finish_overlay_skitter') ) return false;
+				
+				self.settings.foucs_active = false;
+				$(this).addClass('finish_overlay_skitter');
+				
+				if (!self.settings.hideTools) self.box_skitter.find('.focus_button').animate({opacity:0.3}, 200);
+				
+				self.box_skitter
+					.stop()
+					.animate({'top':_top, 'left':_left}, 200, 'easeOutExpo', function() {
+						$('#mark_position').before(self.box_skitter);
+						$(this).css({'position':'relative', 'top':0, 'left': 0});
+						$('#mark_position').remove();
 					});
-					
-					return false;
+				
+				$('#overlay_skitter').fadeTo(self.settings.interval_out_elements, 0, function() {
+					$(this).remove();
 				});
 				
 				return false;
 			});
 		},
 		
-
 		/**
 		 * Controls: play and stop
 		 */
@@ -2910,6 +3249,7 @@
 					}
 					
 					if (self.settings.elapsedTime <= self.settings.interval) {
+						self.clearTimer(true); // Fix bug IE: double next
 						self.timer = setTimeout(function() { self.completeMove(); }, self.settings.interval - self.settings.elapsedTime);
 						self.box_skitter.find('.image_main').attr({'src': self.settings.image_atual});
 						self.box_skitter.find('.image a').attr({'href': self.settings.link_atual});
@@ -2927,174 +3267,161 @@
 	$.fn.css3 = function(props) {
 		var css = {};
 		var prefixes = ['moz', 'ms', 'o', 'webkit'];
-		
 		for(var prop in props) {
 			// Add the vendor specific versions
 			for(var i=0; i<prefixes.length; i++)
 				css['-'+prefixes[i]+'-'+prop] = props[prop];
-			
 			// Add the actual version	
 			css[prop] = props[prop];
 		}
-		
 		this.css(css);
 		return this;
 	};
 	
-    // Monkey patch jQuery 1.3.1+ to add support for setting or animating CSS
-    // scale and rotation independently.
-    // 2009-2010 Zachary Johnson www.zachstronaut.com
-    // Updated 2010.11.06
-    var rotateUnits = 'deg';
-    
-    $.fn.rotate = function (val) {
-        var style = $(this).css('transform') || 'none';
-        
-        if (typeof val == 'undefined') {
-            if (style) {
-                var m = style.match(/rotate\(([^)]+)\)/);
-                if (m && m[1]) {
-                    return m[1];
-                }
-            }
-            return 0;
-        }
-        
-        var m = val.toString().match(/^(-?\d+(\.\d+)?)(.+)?$/);
-		
-        if (m) {
-            if (m[3]) rotateUnits = m[3];
-            $(this).css('transform',
-                style.replace(/none|rotate\([^)]*\)/, '') + 'rotate(' + m[1] + rotateUnits + ')'
-            );
-        }
-        
-        return this;
-    };
-    
-    // Note that scale is unitless.
-    $.fn.scale = function (val, duration, options) {
-        var style = $(this).css('transform');
-        
-        if (typeof val == 'undefined') {
-            if (style) {
-                var m = style.match(/scale\(([^)]+)\)/);
-                if (m && m[1]) {
-                    return m[1];
-                }
-            }
-            return 1;
-        }
-		
-        $(this).css('transform',
-            style.replace(/none|scale\([^)]*\)/, '') + 'scale(' + val + ')'
-        );
-        
-        return this;
-    };
-
-    // fx.cur() must be monkey patched because otherwise it would always
-    // return 0 for current rotate and scale values
-    var curProxied = $.fx.prototype.cur;
-    $.fx.prototype.cur = function () {
-        if (this.prop == 'rotate') {
-            return parseFloat($(this.elem).rotate());
-        }
-        else if (this.prop == 'scale') {
-            return parseFloat($(this.elem).scale());
-        }
-        return curProxied.apply(this, arguments);
-    };
-    
-    $.fx.step.rotate = function (fx) {
-        $(fx.elem).rotate(fx.now + rotateUnits);
-    };
-    
-    $.fx.step.scale = function (fx) {
-        $(fx.elem).scale(fx.now);
-    };
-    
-    var animateProxied = $.fn.animate;
-    $.fn.animate = function (prop) {
-        if (typeof prop['rotate'] != 'undefined') {
-            var m = prop['rotate'].toString().match(/^(([+-]=)?(-?\d+(\.\d+)?))(.+)?$/);
-            if (m && m[5]) {
-                rotateUnits = m[5];
-            }
-            prop['rotate'] = m[1];
-        }
-        
-        return animateProxied.apply(this, arguments);
-    };
+	// Monkey patch jQuery 1.3.1+ to add support for setting or animating CSS
+	// scale and rotation independently.
+	// 2009-2010 Zachary Johnson www.zachstronaut.com
+	// Updated 2010.11.06
+	var rotateUnits = 'deg';
 	
-    // Monkey patch jQuery 1.3.1+ css() method to support CSS 'transform'
-    // property uniformly across Safari/Chrome/Webkit, Firefox 3.5+, IE 9+, and Opera 11+.
-    // 2009-2011 Zachary Johnson www.zachstronaut.com
-    // Updated 2011.05.04 (May the fourth be with you!)
-    function getTransformProperty(element) {
-        var properties = ['transform', 'WebkitTransform', 'msTransform', 'MozTransform', 'OTransform'];
-        var p;
-        while (p = properties.shift()) {
-            if (typeof element.style[p] != 'undefined') {
-                return p;
-            }
-        }
-        return 'transform';
-    };
-    
-    var _propsObj = null;
-    
-    var proxied = $.fn.css;
-    $.fn.css = function (arg, val) {
-        if (_propsObj === null) {
-            if (typeof $.cssProps != 'undefined') {
-                _propsObj = $.cssProps;
-            }
-            else if (typeof $.props != 'undefined') {
-                _propsObj = $.props;
-            }
-            else {
-                _propsObj = {};
-            }
-        }
+	$.fn.rotate = function (val) {
+		var style = $(this).css('transform') || 'none';
+		if (typeof val == 'undefined') {
+			if (style) {
+				var m = style.match(/rotate\(([^)]+)\)/);
+				if (m && m[1]) {
+					return m[1];
+				}
+			}
+			return 0;
+		}
+		var m = val.toString().match(/^(-?\d+(\.\d+)?)(.+)?$/);
+		if (m) {
+			if (m[3]) rotateUnits = m[3];
+			$(this).css('transform',
+				style.replace(/none|rotate\([^)]*\)/, '') + 'rotate(' + m[1] + rotateUnits + ')'
+			);
+		}
 		
-        if
-        (
-            typeof _propsObj['transform'] == 'undefined'
-            &&
-            (
-                arg == 'transform'
-                ||
-                (
-                    typeof arg == 'object'
-                    && typeof arg['transform'] != 'undefined'
-                )
-            )
-        ) {
-            _propsObj['transform'] = getTransformProperty(this.get(0));
-        }
+		return this;
+	};
+	
+	// Note that scale is unitless.
+	$.fn.scale = function (val, duration, options) {
+		var style = $(this).css('transform');
+		if (typeof val == 'undefined') {
+			if (style) {
+				var m = style.match(/scale\(([^)]+)\)/);
+				if (m && m[1]) {
+					return m[1];
+				}
+			}
+			return 1;
+		}
+		$(this).css('transform',
+			style.replace(/none|scale\([^)]*\)/, '') + 'scale(' + val + ')'
+		);
+		return this;
+	};
+
+	// fx.cur() must be monkey patched because otherwise it would always
+	// return 0 for current rotate and scale values
+	var curProxied = $.fx.prototype.cur;
+	$.fx.prototype.cur = function () {
+		if (this.prop == 'rotate') {
+			return parseFloat($(this.elem).rotate());
+		}
+		else if (this.prop == 'scale') {
+			return parseFloat($(this.elem).scale());
+		}
+		return curProxied.apply(this, arguments);
+	};
+	
+	$.fx.step.rotate = function (fx) {
+		$(fx.elem).rotate(fx.now + rotateUnits);
+	};
+	
+	$.fx.step.scale = function (fx) {
+		$(fx.elem).scale(fx.now);
+	};
+	
+	var animateProxied = $.fn.animate;
+	$.fn.animate = function (prop) {
+		if (typeof prop['rotate'] != 'undefined') {
+			var m = prop['rotate'].toString().match(/^(([+-]=)?(-?\d+(\.\d+)?))(.+)?$/);
+			if (m && m[5]) {
+				rotateUnits = m[5];
+			}
+			prop['rotate'] = m[1];
+		}
 		
-        if (_propsObj['transform'] != 'transform') {
-            // Call in form of css('transform' ...)
-            if (arg == 'transform') {
-                arg = _propsObj['transform'];
-                if (typeof val == 'undefined' && jQuery.style) {
-                    return jQuery.style(this.get(0), arg);
-                }
-            }
-			
-            // Call in form of css({'transform': ...})
-            else if
-            (
-                typeof arg == 'object'
-                && typeof arg['transform'] != 'undefined'
-            ) {
-                arg[_propsObj['transform']] = arg['transform'];
-                delete arg['transform'];
-            }
-        }
-        
-        return proxied.apply(this, arguments);
-    };
+		return animateProxied.apply(this, arguments);
+	};
+	
+	// Monkey patch jQuery 1.3.1+ css() method to support CSS 'transform'
+	// property uniformly across Safari/Chrome/Webkit, Firefox 3.5+, IE 9+, and Opera 11+.
+	// 2009-2011 Zachary Johnson www.zachstronaut.com
+	// Updated 2011.05.04 (May the fourth be with you!)
+	function getTransformProperty(element) {
+		var properties = ['transform', 'WebkitTransform', 'msTransform', 'MozTransform', 'OTransform'];
+		var p;
+		while (p = properties.shift()) {
+			if (typeof element.style[p] != 'undefined') {
+				return p;
+			}
+		}
+		return 'transform';
+	};
+	
+	var _propsObj = null;
+	
+	var proxied = $.fn.css;
+	$.fn.css = function (arg, val) {
+		if (_propsObj === null) {
+			if (typeof $.cssProps != 'undefined') {
+				_propsObj = $.cssProps;
+			}
+			else if (typeof $.props != 'undefined') {
+				_propsObj = $.props;
+			}
+			else {
+				_propsObj = {};
+			}
+		}
+		if
+		(
+			typeof _propsObj['transform'] == 'undefined'
+			&&
+			(
+				arg == 'transform'
+				||
+				(
+					typeof arg == 'object'
+					&& typeof arg['transform'] != 'undefined'
+				)
+			)
+		) {
+			_propsObj['transform'] = getTransformProperty(this.get(0));
+		}
+		if (_propsObj['transform'] != 'transform') {
+			// Call in form of css('transform' ...)
+			if (arg == 'transform') {
+				arg = _propsObj['transform'];
+				if (typeof val == 'undefined' && jQuery.style) {
+					return jQuery.style(this.get(0), arg);
+				}
+			}
+			// Call in form of css({'transform': ...})
+			else if
+			(
+				typeof arg == 'object'
+				&& typeof arg['transform'] != 'undefined'
+			) {
+				arg[_propsObj['transform']] = arg['transform'];
+				delete arg['transform'];
+			}
+		}
+		return proxied.apply(this, arguments);
+	};
 
 })(jQuery);

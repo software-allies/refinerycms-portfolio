@@ -235,7 +235,7 @@
 	color: #fff;
 	text-indent: -9999em;
 	overflow: hidden;
-	background: url(../images/ajax-loader.gif) no-repeat left top;
+	background: url(../ajax-loader.gif) no-repeat left top;
 	width: 32px;
 	height: 32px;
 }
@@ -401,7 +401,7 @@
 .box_skitter .play_pause_button 
 {
 	display: block;
-	background: url('../images/sprite-default.png') no-repeat;
+	background: url('../sprite-default.png') no-repeat;
 }
 
 .box_skitter .next_button {
@@ -442,7 +442,7 @@
 .skitter-minimalist .focus_button 
 {
 	display: block;
-	background: url('../images/sprite-minimalist.png') no-repeat !important;
+	background: url('../sprite-minimalist.png') no-repeat !important;
 }
 
 .skitter-minimalist .prev_button {
@@ -510,7 +510,7 @@
 .skitter-round .focus_button 
 {
 	display: block;
-	background: url('../images/sprite-round.png') no-repeat;
+	background: url('../sprite-round.png') no-repeat;
 }
 
 .skitter-round .prev_button {
@@ -603,7 +603,7 @@
 .skitter-clean .focus_button 
 {
 	display: block;
-	background: url('../images/sprite-clean.png') no-repeat;
+	background: url('../sprite-clean.png') no-repeat;
 }
 
 .skitter-clean .prev_button {
@@ -693,7 +693,7 @@
 .skitter-square .prev_button 
 {
 	display: block;
-	background: url('../images/sprite-square.png') no-repeat;
+	background: url('../sprite-square.png') no-repeat;
 }
 
 .skitter-square .play_pause_button {

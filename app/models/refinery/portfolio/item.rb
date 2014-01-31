@@ -25,6 +25,10 @@ module Refinery
           where(:gallery_id => nil)
         end
 
+        def orphaned?
+          gallery_id.nil?
+        end
+
         alias_method :orphaned, :root_items
       end
 

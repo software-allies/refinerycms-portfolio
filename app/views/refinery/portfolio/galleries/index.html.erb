@@ -1,7 +1,6 @@
 <% content_for :body do %>
   <%= raw @page.content_for(:body) %>
   <%= render 'refinery/portfolio/items/items', :items => @items %>
-  <%= render 'galleries', :galleries => @galleries %>
 <% end %>
 
 <%= render '/refinery/content_page' %>

@@ -1,7 +1,31 @@
-<%- if items.present? -%>
-  <div class='slideshow box_skitter box_skitter_large' id='gallery_images'>
-    <ul>
-      <%= render items %>
-    </ul>
-  </div>
-<%- end -%>
+<div class='container'>
+	<%- if items.present? && @gallery.nil? -%>
+
+		<div class='row'>
+			<div class="span3">
+				<%= image_tag "logo.jpg" %>
+				<br/><br/>
+				<b>OFFICE</b> 903.769.5044<br/>
+				<b>CEL</b> 903.769.5044<br/>
+				<b>FAX</b> 903.769.5044<br/>
+				2525 CR 3419 P.O. BOX 1008 HAWKINS, TX 75765
+			</div>
+		  <div class="span9">
+			  <div class='slideshow box_skitter box_skitter_large' id='gallery_images'>
+			    <ul>
+			      <%= render items %>
+			    </ul>
+			  </div>
+		  </div>
+		</div>
+
+	<% elsif @gallery.present? %>
+
+		<div class='slideshow box_skitter box_skitter_large' id='gallery_images'>
+			  <ul>
+			    <%= render items %>
+			  </ul>
+		</div>
+
+	<%- end -%>
+</div>

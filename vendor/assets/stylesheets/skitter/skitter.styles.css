@@ -2,8 +2,8 @@
 ----------------------------------------------- */
 .box_skitter {
 	position: relative;
-	width: 800px;
-	height: 300px;
+	width: 100%;
+	height: 350px;
 	background: #000;
 }
 
@@ -17,6 +17,7 @@
 .box_skitter .container_skitter {
 	overflow: hidden;
 	position: relative;
+	width: 100% !important;
 }
 
 .box_skitter .image {
@@ -384,8 +385,8 @@
 /* =Example for dimenions
 -------------------------------------------------------------- */
 .box_skitter_large {
-	width: 800px;
-	height: 300px;
+	width: 100%;
+	height: 350px;
 }
 
 .box_skitter_small {

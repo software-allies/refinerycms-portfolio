@@ -443,7 +443,7 @@
 				switch (self.settings.numbers_align) {
 					case 'center' : 
 						var _vleft = (self.settings.width_skitter - self.box_skitter.find(class_info).width()) / 2;
-						self.box_skitter.find(class_info).css({'left':_vleft});
+						self.box_skitter.find(class_info).css({'right':_vleft});
 						break;
 						
 					case 'right' : 
@@ -696,6 +696,7 @@
 		 */
 		jumpToImage: function(imageNumber) 
 		{
+
 			if (this.settings.is_animating == false) {
 				this.settings.elapsedTime = 0;
 				this.box_skitter.find('.box_clone').stop();
@@ -715,6 +716,7 @@
 		 */
 		nextImage: function() 
 		{
+
 			var self = this;
 			
 			animations_functions = [
@@ -2517,6 +2519,7 @@
 		// Complete move
 		completeMove: function () 
 		{
+
 			this.clearTimer(true);
 			this.box_skitter.find('.box_clone').remove();
 			if (!this.settings.is_paused && !this.settings.is_blur) this.nextImage();
@@ -2524,6 +2527,7 @@
 
 		// Actual config for animation
 		setActualLevel: function() {
+
 			if ($.isFunction(this.settings.imageSwitched)) this.settings.imageSwitched(this.settings.image_i, this);
 			this.setImageLink();
 			this.addClassNumber();

@@ -6,11 +6,8 @@
 				<div>
 					<%= image_tag "logo.png" %>
 				</div>
-				<div style="bottom:0px;">
-					<b>OFFICE</b> 903.769.5044<br/>
-					<b>CEL</b> 903.769.5044<br/>
-					<b>FAX</b> 903.769.5044<br/>
-					2525 CR 3419 P.O. BOX 1008 HAWKINS, TX 75765
+				<div class="description-padding">
+					<%= raw Refinery::Portfolio.description %>
 				</div>
 			</div>
 		  <div class="span9">
@@ -33,6 +30,6 @@
 	<% else %>	
 
 	  	<h1>Please, add some galleries and some images to the top level.</h1>
-	  	
+
 	<%- end -%>
 </div>

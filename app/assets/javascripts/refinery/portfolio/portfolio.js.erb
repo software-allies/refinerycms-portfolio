@@ -2,14 +2,6 @@
 //= require_self
 
 jQuery(document).ready(function($) {
-  $('.slideshow').skitter(
-    {
-	    dots: true, 
-	    theme: 'clean', 
-	    numbers_align: 'center', 
-	    auto_play: true, 
-	    preview: true,
-    }  	
-  	);
+  $('.slideshow').skitter(<%= Refinery::Portfolio.skitter_options.to_json %>);
 });
 

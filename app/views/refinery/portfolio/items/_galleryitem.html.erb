@@ -1,5 +1,6 @@
 <div class='span2 aligncenter'>
-	<%= image_tag(item.image.url, {:id => dom_id(item), :title => item.title, class: "staticheightimage"}) %>
+	<%#= image_tag(item.image.url, {:id => dom_id(item), :title => item.title, class: "static-size-image"}) %>
+	<%= image_fu item.image, '120x120', {:id => dom_id(item), :title => item.title, class: "static-size-image"} %>
 </div>
 <% #if ::Refinery::Portfolio.display_item_text %>
 <!-- <div class='label_text'>

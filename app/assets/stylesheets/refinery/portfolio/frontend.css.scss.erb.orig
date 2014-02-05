@@ -55,7 +55,8 @@
 }
 
 .description-padding{
-  padding-top: 190px;
+<<<<<<< HEAD
+  padding-top: 210px;
 }
 
 .staticheightimage{
@@ -69,3 +70,7 @@
 .aligncenter{
   text-align: center;
 }
+=======
+  padding-top: 190px;
+}
+>>>>>>> ca42c4ad6bf1fc5aee57e461399f265c9cc626c1

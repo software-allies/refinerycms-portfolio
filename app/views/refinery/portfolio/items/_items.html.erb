@@ -1,3 +1,4 @@
+
 <div class='container'>
 	<%- if items.present? && @gallery.nil? -%>
 
@@ -20,13 +21,15 @@
 		</div>
 
 	<% elsif @gallery.present? %>
-
-		<div class='slideshow box_skitter box_skitter_large' id='gallery_images'>
-			  <ul>
-			    <%= render items %>
-			  </ul>
-		</div>
-
+		<% total_items = 1 %>
+	 	<% items.each do |item| %>
+	 		<%= "<div class='row paddingleft'>".html_safe if total_items == 1 %>
+	 		<%= render 'refinery/portfolio/items/galleryitem', :item =>item %>
+	 		<%= "</div>".html_safe if total_items == 6 %>
+	 		<% total_items = 0 if total_items ==  6 %>
+	 		<% total_items += 1 %>
+	 	<% end %>
+	 	<%= "</div>".html_safe if total_items > 1 %>
 	<% else %>	
 
 	  	<h1>Please, add some galleries and some images to the top level.</h1>

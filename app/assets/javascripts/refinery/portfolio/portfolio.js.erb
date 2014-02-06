@@ -3,5 +3,36 @@
 
 jQuery(document).ready(function($) {
   $('.slideshow').skitter(<%= Refinery::Portfolio.skitter_options.to_json %>);
-});
+  $('a[href="#modal_image"]').on('click',function(){
+  	//set title and content
+	  	$('.modal-body').html('<img src="'+$(this).data('img-url')+'"/>') 
+	  	$('#modal-header-label').html($(this).data('title'))
+  	
+	//attach the events or disable the buttons  	
+	  	$a=$(this)
+	  	div_id=$($a).closest('div').attr('id')
+	  	$preview_div=$('div#'+div_id).prev()
+	  	$next_div=$('div#'+div_id).next()
+		$('.preview-btn').unbind('click')
+	  	$('.next-btn').unbind('click')
 
+	  	if($preview_div.length>0){ 
+	  		$('.preview-btn').removeAttr('disabled','')
+		  	$('.preview-btn').bind('click',function(){
+		  		$preview_div.find('a').trigger('click')
+		  	})
+	  	}else{
+	  		$('.preview-btn').attr('disabled','disabled')
+	  	}
+	  	if($next_div.length>0){ 
+	  		$('.next-btn').removeAttr('disabled')
+		  	$('.next-btn').bind('click',function(){
+		  		$next_div.find('a').trigger('click')
+		  		
+		  	})  	
+	  	}else{
+	  		$('.next-btn').attr('disabled','disabled')
+	  	}
+
+  })  
+});

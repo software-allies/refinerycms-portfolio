@@ -22,7 +22,7 @@ module Refinery
         end
 
         def root_items
-          where(:gallery_id => nil)
+          where(:gallery_id => nil).order('position ASC')
         end
 
         def orphaned?

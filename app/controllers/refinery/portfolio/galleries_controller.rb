@@ -13,7 +13,7 @@ module Refinery
       def show
         @gallery = Gallery.find(params[:id])
         @galleries = @gallery.children
-        @items = @gallery.items
+        @items = @gallery.items.order('position ASC')
         present(@page)
 
         render :action => "index"

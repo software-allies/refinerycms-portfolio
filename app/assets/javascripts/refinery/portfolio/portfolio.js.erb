@@ -5,10 +5,10 @@ jQuery(document).ready(function($) {
   $('.slideshow').skitter(<%= Refinery::Portfolio.skitter_options.to_json %>);
   $('a[href="#modal_image"]').on('click',function(){
   	//set title and content
-	  	$('.modal-body').html('<img src="'+$(this).data('img-url')+'"/>') 
+	  	$('.modal-body').html('<img class="img-responsive-height" src="'+$(this).data('img-url')+'"/>') 
 	  	$('#modal-header-label').html($(this).data('title'))
   	
-	//attach the events or disable the buttons  	
+	//attach the events and/or disable the buttons  	
 	  	$a=$(this)
 	  	div_id=$($a).closest('div').attr('id')
 	  	$preview_div=$('div#'+div_id).prev()
@@ -36,3 +36,4 @@ jQuery(document).ready(function($) {
 
   })  
 });
+

@@ -13,24 +13,7 @@
     <%= f.text_field :title, :class => 'larger widest' -%>
   </div>
 
-  <div class='field'>
-    <div id='page-tabs' class='clearfix ui-tabs ui-widget ui-widget-content ui-corner-all'>
-      <ul id='page_parts'>
-        <% [:caption].each_with_index do |part, part_index| %>
-          <li class='ui-state-default<%= ' ui-state-active' if part_index == 0 %>'>
-            <%= link_to t("#{part}", :scope => "activerecord.attributes.refinery/portfolio/item", :default => part.to_s.titleize), "##{part}" %>
-          </li>
-        <% end %>
-      </ul>
-      <div id='page_part_editors'>
-        <% [:caption].each do |part| %>
-          <div class='page_part' id='<%= part %>'>
-            <%= f.text_area part, :rows => 20, :class => 'wymeditor widest' -%>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
+
 
   <%= render :partial => '/refinery/admin/image_picker',
               :locals => {
@@ -40,6 +23,7 @@
                 :toggle_image_display => false
               } %>
 
+<% if @item.gallery.present? %>
   <div class='field'>
     <span class='label_with_help'>
       <%= f.label :gallery_id, t('gallery', :scope => 'refinery.portfolio.admin.items.item') -%>
@@ -47,6 +31,7 @@
     </span>
     <%= f.select :gallery_id, nested_set_options(::Refinery::Portfolio::Gallery, @gallery) { |i| "#{'-' * i.level} #{i.title}" }, :include_blank => true %>
   </div>
+<% end %>
 
   <%= render :partial => "/refinery/admin/form_actions",
               :locals => {

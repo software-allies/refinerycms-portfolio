@@ -11,10 +11,12 @@
     <%= link_to t('.back_to_galleries'), refinery.portfolio_admin_galleries_path, :class => 'go_icon' %>
   </li>
 
+  <% if !@gallery.present? %>
   <li>
     <%= link_to t('.create_new'), refinery.new_portfolio_admin_item_path,
                  :class => "add_icon" %>
   </li>
+  <% end %>
 <% if !searching? && @items.many? %>
   <li>
     <%= link_to t('.reorder', :what => "Images"),

@@ -21,16 +21,20 @@ jQuery(document).ready(function($) {
 		  	$('.preview-btn').bind('click',function(){
 		  		$preview_div.find('a').trigger('click')
 		  	})
+		  	$('.preview-btn').addClass('yellow_btn').removeClass('disabled_btn');
 	  	}else{
 	  		$('.preview-btn').attr('disabled','disabled')
+	  		$('.preview-btn').addClass('disabled_btn').removeClass('yellow_btn');
 	  	}
 	  	if($next_div.length>0){ 
 	  		$('.next-btn').removeAttr('disabled')
 		  	$('.next-btn').bind('click',function(){
 		  		$next_div.find('a').trigger('click')
-		  	})  	
+		  	})
+		  	$('.next-btn').addClass('yellow_btn').removeClass('disabled_btn'); 	
 	  	}else{
 	  		$('.next-btn').attr('disabled','disabled')
+	  		$('.next-btn').addClass('disabled_btn').removeClass('yellow_btn');
 	  	}
 
   })  

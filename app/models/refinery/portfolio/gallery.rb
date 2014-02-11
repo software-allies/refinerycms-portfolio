@@ -21,8 +21,18 @@ module Refinery
       alias_attribute :description, :body
 
       validates :title, :presence => true
+      validate :one_image_at_least
 
       after_save :bulk_update_associated_items
+
+      def one_image_at_least
+        if @image_ids.empty?
+          errors.add(:items, "you must have at least one item chosen")
+          false
+        else
+          true
+        end
+      end
 
       def cover_image
         items.sort_by(&:position).first if items.present?

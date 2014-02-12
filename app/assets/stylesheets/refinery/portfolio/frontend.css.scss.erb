@@ -102,17 +102,30 @@
 .ohidden{
   overflow: hidden; 
 }
-.img-responsive-height{
-  display: block;
-  width: auto;
-  max-height: 90%
-}
-.modal { 
-    position: fixed; 
-}
-.modal-body { 
-    height: 60%; 
-}
+
+/*-- responsive modal --*/
+  .img-responsive-height{
+    display: block;
+    width: auto;
+    max-height: 90%;
+  }
+
+  @-moz-document url-prefix() {
+    .img-responsive-height{
+      display: block;
+      width: auto;
+      max-height: 22em;
+    }
+  }
+
+  .modal { 
+      position: fixed; 
+  }
+  .modal-body { 
+      height: 60%; 
+  }
+
+/* -----------------*/
 
 .yellow_btn{
     -moz-border-bottom-colors: none;

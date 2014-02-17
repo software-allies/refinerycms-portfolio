@@ -121,14 +121,44 @@
   .modal { 
       position: fixed; 
   }
+
   .modal-body { 
       height: 60%; 
   }
+
   @media (max-width: 979px) {
-  h1, h2, h3, h4, h5, h6 {
-    font-size: 17px;
+    h1, h2, h3, h4, h5, h6 {
+      font-size: 17px;
+    }
+    .thumbnail_logo{
+      display: block;
+    }    
+    .navbar .btn, .navbar .btn-group {
+      margin-top: 15px;
+    }
   }
-}
+
+  @media (max-width: 767px) {
+    .logo{
+      display: none;
+    }
+    .description-padding {
+      padding-top: 0;
+    }
+    .company-info{
+      display: none;
+    }
+    .container_skitter{
+      height: 300px !important;
+    }
+    .box_skitter img{
+      height: 300px !important;
+    }
+    .box_skitter_large{
+      height: 300px !important;
+    }
+  }
+
 
 /* -----------------*/
 

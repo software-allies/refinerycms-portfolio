@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
   $('.slideshow').skitter(<%= Refinery::Portfolio.skitter_options.to_json %>);
   $('a[href="#modal_image"]').on('click',function(){
   	//set title and content
-	  	$('.modal-body').html('<center><img class="img-responsive-height" src="'+$(this).data('img-url')+'"/></center>') 
+	  	$('.modal-body').html('<center><a target="_blank" href="'+$(this).data('img-url')+'"><img class="img-responsive-height" src="'+$(this).data('img-url')+'"/></a></center>') 
 	  	$('#modal-header-label').html($(this).data('title'))
   	
 	//attach the events and/or disable the buttons  	
@@ -36,6 +36,14 @@ jQuery(document).ready(function($) {
 	  		$('.next-btn').attr('disabled','disabled')
 	  		$('.next-btn').addClass('disabled_btn').removeClass('yellow_btn');
 	  	}
+
+  });
+  $('.btn-navbar').on('click',function(){
+  	if( $('.nav-collapse').hasClass('in') ){
+       $('.nav-collapse.collapse').css('overflow','hidden')
+   }else{
+   	   $('.nav-collapse.collapse').css('overflow','visible')
+   }
 
   })  
 });

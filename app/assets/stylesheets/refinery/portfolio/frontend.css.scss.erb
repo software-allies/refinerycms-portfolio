@@ -60,7 +60,7 @@
 
 .static-size-image{
   height: 150px;
-  width: 150px;
+  width: 200px;
 }
 
 .paddingleft{
@@ -160,6 +160,16 @@
   }
 
 
+  @media (min-width: 767px) and (max-width: 979px) {
+      .static-size-image{
+        height: 100px;
+        
+      }
+
+  }
+
+
+
 /* -----------------*/
 
 .yellow_btn{
@@ -219,4 +229,7 @@
     font-weight: bold;
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
     vertical-align: middle;  
+}
+.fb_iframe_widget_lift{
+  z-index: 1000 !important;
 }
